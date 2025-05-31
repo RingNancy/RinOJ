@@ -1,5 +1,6 @@
 <template>
   <a-row id="globalNav" align="center" :wrap="false">
+    <!--    导航栏右侧设置用户头像-->
     <a-col flex="auto">
       <a-menu
         mode="horizontal"
@@ -42,7 +43,7 @@
 
 <!--采用路由进行页面的跳转-->
 <script setup lang="ts">
-import { routes } from "../router/routes";
+import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
@@ -99,6 +100,7 @@ setTimeout(() => {
   margin-left: 14px;
   font-size: 18px;
 }
+
 .logo {
   height: 48px;
 }
