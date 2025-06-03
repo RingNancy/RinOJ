@@ -1,8 +1,10 @@
 import { RouteRecordRaw } from "vue-router";
+import UserLayout from "@/layouts/UserLayout.vue";
+import UserLoginView from "@/views/user/UserLoginView.vue";
+import UserRegisterView from "@/views/user/UserRegisterView.vue";
 import HomeView from "@/views/HomeView.vue";
 import AdminView from "@/views/AdminView.vue";
 import NoAuthority from "@/views/NoAuthority.vue";
-import LoginView from "@/views/LoginView.vue";
 import AccessEnum from "@/access/AccessEnum";
 
 export const routes: Array<RouteRecordRaw> = [
@@ -11,7 +13,26 @@ export const routes: Array<RouteRecordRaw> = [
     name: "题库",
     component: HomeView,
   },
-
+  {
+    path: "/user",
+    name: "用户",
+    component: UserLayout,
+    children: [
+      {
+        path: "/user/login",
+        name: "用户登录",
+        component: UserLoginView,
+      },
+      {
+        path: "/user/register",
+        name: "用户注册",
+        component: UserRegisterView,
+      },
+    ],
+    meta: {
+      hideMenu: true,
+    },
+  },
   {
     path: "/results",
     name: "运行结果",
@@ -33,13 +54,5 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/none_authority",
     name: "ACCESS_DENY",
     component: NoAuthority,
-    meta: {
-      hideMenu: true,
-    },
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: LoginView,
   },
 ];

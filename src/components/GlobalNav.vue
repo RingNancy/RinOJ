@@ -29,7 +29,7 @@
       <a-space>
         <a-dropdown>
           <a-avatar :style="{ backgroundColor: '#14a9f8' }" :size="48">
-            {{ store.state.user?.loginUser?.userName ?? "未登录" }}
+            {{ store.state.user?.loginUser?.userName ?? "Sign In" }}
           </a-avatar>
           <template #content>
             <a-doption>用户中心</a-doption>
@@ -61,12 +61,6 @@ router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
 });
 
-const doMenuClicked = (key: string) => {
-  router.push({
-    path: key,
-  });
-};
-
 const visibleRoutes = computed(() => {
   return routes.filter((item, index) => {
     if (item.meta?.hideMenu) {
@@ -84,10 +78,16 @@ const visibleRoutes = computed(() => {
 // 测试案例，5s后自动登录，并且修改角色信息拥有管理员权限
 setTimeout(() => {
   store.dispatch("user/getLoginUser", {
-    userName: "Rin",
+    userName: "rin",
     userRole: ACCESS_ENUM.ADMIN,
   });
-}, 5000);
+}, 3000);
+
+const doMenuClicked = (key: string) => {
+  router.push({
+    path: key,
+  });
+};
 </script>
 
 <style scoped>
