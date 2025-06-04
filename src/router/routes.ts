@@ -54,5 +54,8 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/none_authority",
     name: "ACCESS_DENY",
     component: NoAuthority,
+    meta: {
+      hideMenu: true,
+    },
   },
 ];

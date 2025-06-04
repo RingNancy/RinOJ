@@ -76,12 +76,12 @@ const visibleRoutes = computed(() => {
 });
 
 // 测试案例，5s后自动登录，并且修改角色信息拥有管理员权限
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "rin",
-    userRole: ACCESS_ENUM.ADMIN,
-  });
-}, 3000);
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     userName: "rin",
+//     userRole: ACCESS_ENUM.ADMIN,
+//   });
+// }, 3000);
 
 const doMenuClicked = (key: string) => {
   router.push({

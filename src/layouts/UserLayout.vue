@@ -2,7 +2,21 @@ import router from '../router/index';
 <template>
   <div id="UserLayout">
     <a-layout style="min-height: 100vh">
-      <a-layout-header class="header"> 用户布局 </a-layout-header>
+      <a-layout-header class="header">
+        <a-space>
+          <img src="../assets/jinXI_logo.jpg" class="logo" />
+          <div
+            style="
+              font-size: 36px;
+              color: #14a9f8;
+              margin-top: auto;
+              margin-bottom: auto;
+            "
+          >
+            Rin OJ
+          </div>
+        </a-space>
+      </a-layout-header>
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
@@ -13,21 +27,24 @@ import router from '../router/index';
 
 <style scoped>
 #UserLayout {
+  text-align: center;
+}
+#UserLayout .logo {
+  height: 84px;
+  width: 84px;
 }
 
 #UserLayout .header {
-  margin-bottom: 8px;
+  margin-top: 16px;
   box-shadow: #eee 1px 1px 5px;
 }
 
 #UserLayout .content {
-  background: gainsboro;
   padding: 20px;
   margin-bottom: 16px;
 }
 
 #UserLayout .footer {
-  background: whitesmoke;
   padding: 16px;
   position: sticky;
   text-align: center;
