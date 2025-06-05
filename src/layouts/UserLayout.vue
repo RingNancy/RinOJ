@@ -28,6 +28,7 @@ import router from '../router/index';
 <style scoped>
 #UserLayout {
   text-align: center;
+  background: url("../assets/background.png") 0% 0% / 100% 100% no-repeat;
 }
 #UserLayout .logo {
   height: 84px;

@@ -1,48 +1,54 @@
 <template>
   <div class="userLoginView">
-    <a-space class="wrapper" direction="vertical">
-      <h2 style="margin-bottom: 16px; margin-top: 8px">用户登录</h2>
-      <a-form
-        style="max-width: 400px; margin: 0 auto"
-        ref="formRef"
-        :rules="rules"
-        :model="form"
-        @submit="handleSubmit"
-      >
-        <a-form-item field="userAccount" label="账号" validate-trigger="blur">
-          <a-input v-model="form.userAccount" placeholder="请输入账号..." />
-        </a-form-item>
-        <a-form-item field="userPassword" label="密码" validate-trigger="blur">
-          <a-input-password
-            v-model="form.userPassword"
-            placeholder="请输入密码..."
-          />
-        </a-form-item>
-        <!--        <a-form-item field="password2" label="确认密码" validate-trigger="blur">-->
-        <!--          <a-input-password-->
-        <!--            v-model="form.password2"-->
-        <!--            placeholder="please confirm your password..."-->
-        <!--          />-->
-        <!--        </a-form-item>-->
+    <div class="login-container">
+      <a-space class="wrapper" direction="vertical">
+        <h2 class="title">用户登录</h2>
+        <a-form
+          class="login-form"
+          ref="formRef"
+          :rules="rules"
+          :model="form"
+          @submit="handleSubmit"
+        >
+          <a-form-item field="userAccount" label="账号" validate-trigger="blur">
+            <a-input v-model="form.userAccount" placeholder="请输入账号..." />
+          </a-form-item>
+          <a-form-item
+            field="userPassword"
+            label="密码"
+            validate-trigger="blur"
+          >
+            <a-input-password
+              v-model="form.userPassword"
+              placeholder="请输入密码..."
+            />
+          </a-form-item>
+          <!--        <a-form-item field="password2" label="确认密码" validate-trigger="blur">-->
+          <!--          <a-input-password-->
+          <!--            v-model="form.password2"-->
+          <!--            placeholder="please confirm your password..."-->
+          <!--          />-->
+          <!--        </a-form-item>-->
 
-        <a-form-item>
-          <a-space>
-            <a-row>
-              <a-button
-                html-type="submit"
-                type="primary"
-                style="margin-right: 24px"
-                >登录</a-button
-              >
-
-              <a-button @click="$refs.formRef.resetFields()" type="outline">
-                注册
-              </a-button>
-            </a-row>
-          </a-space>
-        </a-form-item>
-      </a-form>
-    </a-space>
+          <a-form-item class="button-group">
+            <a-button
+              html-type="submit"
+              type="primary"
+              size="medium"
+              class="login-btn"
+              >登录
+            </a-button>
+            <a-button
+              @click="register"
+              type="outline"
+              size="medium"
+              class="register-btn"
+              >注册
+            </a-button>
+          </a-form-item>
+        </a-form>
+      </a-space>
+    </div>
   </div>
 </template>
 
@@ -85,14 +91,76 @@ const handleSubmit = async () => {
     message.error("登录失败！" + res.message);
   }
 };
+
+const register = () => {
+  //跳转到新页面打开注册页面
+  // router.push({
+  //   path: "/user/register",
+  // });
+  const url = window.location.origin + "/user/register";
+  window.open(url, "_blank");
+};
 </script>
 
 <style scoped lang="less">
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
 .wrapper {
-  width: 460px;
-  padding: 20px;
-  border: 1px solid var(~"--color-border");
-  border-radius: 6px;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 400px;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+.title {
+  text-align: center;
+  margin-bottom: 32px;
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1d2129;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.button-group {
+  margin-top: 24px;
+
+  .login-btn,
+  .register-btn {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .login-btn {
+    margin-right: 8px;
+  }
+
+  .register-btn {
+    margin-bottom: 0;
+  }
+}
+
+// 覆盖 Arco Design 的默认样式
+:deep(.arco-form-item-label) {
+  font-weight: 500;
+  color: #4e5969;
+}
+
+:deep(.arco-input-wrapper) {
+  border-radius: 4px;
+}
+
+:deep(.arco-btn) {
+  border-radius: 50px;
 }
 </style>
