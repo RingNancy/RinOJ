@@ -17,14 +17,14 @@
 }
 
 #basicLayout .header {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   box-shadow: #eee 1px 1px 5px;
 }
 
 #basicLayout .content {
-  background: gainsboro;
-  padding: 20px;
-  margin-bottom: 16px;
+  background: #f7f8fa;
+  padding: 24px;
+  margin-bottom: 8px;
 }
 
 #basicLayout .footer {

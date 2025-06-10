@@ -6,6 +6,8 @@ import HomeView from "@/views/HomeView.vue";
 import AdminView from "@/views/AdminView.vue";
 import NoAuthority from "@/views/NoAuthority.vue";
 import AccessEnum from "@/access/AccessEnum";
+import CodeEditorView from "@/views/CodeEditorView.vue";
+import AddQuestionView from "@/views/question/AddQuestionView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -34,6 +36,11 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/codeEditor",
+    name: "代码编辑",
+    component: CodeEditorView,
+  },
+  {
     path: "/results",
     name: "运行结果",
     // route level code-splitting
@@ -41,6 +48,14 @@ export const routes: Array<RouteRecordRaw> = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+  },
+  {
+    path: "/questions/add_questions",
+    name: "创建题目",
+    component: AddQuestionView,
+    meta: {
+      access: AccessEnum.ADMIN,
+    },
   },
   {
     path: "/admin",

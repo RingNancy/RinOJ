@@ -93,10 +93,6 @@ const handleSubmit = async () => {
 };
 
 const register = () => {
-  //跳转到新页面打开注册页面
-  // router.push({
-  //   path: "/user/register",
-  // });
   const url = window.location.origin + "/user/register";
   window.open(url, "_blank");
 };
