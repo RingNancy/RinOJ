@@ -11,7 +11,12 @@
         <h3 class="section-title">基础信息</h3>
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item field="title" label="标题" class="form-item">
+            <a-form-item
+              field="title"
+              label="标题:"
+              class="form-item"
+              required="required"
+            >
               <a-input
                 v-model="form.title"
                 placeholder="请输入题目标题"
@@ -22,8 +27,9 @@
           <a-col :span="12">
             <a-form-item
               field="tags"
-              label="标签"
+              label="标签:"
               help="关于题目难度或相关知识标签"
+              required="required"
               :validate-status="status"
               feedback
               class="form-item"
@@ -41,9 +47,19 @@
       <!-- 题目内容区域 -->
       <div class="form-section">
         <h3 class="section-title">题目内容</h3>
-        <a-form-item field="content" class="form-item">
+        <a-form-item field="content" class="form-item" required="required">
           <div class="md-editor-wrapper">
-            <MdEditor />
+            <MdEditor v-model="form.content" />
+          </div>
+        </a-form-item>
+      </div>
+
+      <!-- 题目答案 -->
+      <div class="form-section">
+        <h3 class="section-title">题目答案</h3>
+        <a-form-item field="answer" class="form-item">
+          <div class="md-editor-wrapper">
+            <MdEditor v-model="form.answer" />
           </div>
         </a-form-item>
       </div>
@@ -55,9 +71,10 @@
           <a-col :span="8">
             <a-form-item
               field="judgeConfig.memoryLimit"
-              label="内存限制"
+              label="内存限制:"
               help="单位：KB"
               class="form-item"
+              required="required"
             >
               <a-input
                 v-model="form.judgeConfig.memoryLimit"
@@ -69,9 +86,10 @@
           <a-col :span="8">
             <a-form-item
               field="judgeConfig.stackLimit"
-              label="堆栈限制"
+              label="堆栈限制:"
               help="单位：KB"
               class="form-item"
+              required="required"
             >
               <a-input
                 v-model="form.judgeConfig.stackLimit"
@@ -83,9 +101,10 @@
           <a-col :span="8">
             <a-form-item
               field="judgeConfig.timeLimit"
-              label="时间限制"
+              label="时间限制:"
               help="单位：ms"
               class="form-item"
+              required="required"
             >
               <a-input
                 v-model="form.judgeConfig.timeLimit"
@@ -132,7 +151,11 @@
             </div>
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item label="输入" class="case-form-item">
+                <a-form-item
+                  label="输入:"
+                  class="case-form-item"
+                  required="required"
+                >
                   <a-textarea
                     v-model="post.input"
                     placeholder="请输入测试用例的输入数据"
@@ -142,7 +165,11 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item label="输出" class="case-form-item">
+                <a-form-item
+                  label="输出:"
+                  class="case-form-item"
+                  required="required"
+                >
                   <a-textarea
                     v-model="post.output"
                     placeholder="请输入期望的输出结果"
@@ -185,7 +212,7 @@
   {{ form }}
 </template>
 
-<script>
+<script lang="ts">
 import { reactive, ref } from "vue";
 import MdEditor from "@/components/MdEditor.vue";
 import {
@@ -194,6 +221,8 @@ import {
   IconCheck,
   IconRefresh,
 } from "@arco-design/web-vue/es/icon";
+import { QuestionControllerService } from "../../../generated";
+import message from "@arco-design/web-vue/es/message";
 
 export default {
   components: {
@@ -208,12 +237,13 @@ export default {
     const showDebug = ref(false); // 控制调试信息显示
 
     const form = reactive({
-      title: "A+B",
-      content: "题目内容",
+      answer: "",
+      title: "",
+      content: "",
       judgeCase: [
         {
-          input: "1,2",
-          output: "3,4",
+          input: "",
+          output: "",
         },
       ],
       judgeConfig: {
@@ -221,7 +251,7 @@ export default {
         stackLimit: "",
         timeLimit: "",
       },
-      tags: ["栈", "简单"],
+      tags: [],
     });
 
     const handleAdd = () => {
@@ -230,15 +260,26 @@ export default {
         output: "",
       });
     };
-
-    const handleDelete = (index) => {
+    const handleDelete = (index: number) => {
       if (form.judgeCase.length > 1) {
         form.judgeCase.splice(index, 1);
       }
     };
-
-    const handleSubmit = ({ values, errors }) => {
-      console.log("values:", values, "\nerrors:", errors);
+    const handleSubmit = async () => {
+      const payload = {
+        ...form,
+        judgeConfig: {
+          memoryLimit: Number(form.judgeConfig.memoryLimit),
+          stackLimit: Number(form.judgeConfig.stackLimit),
+          timeLimit: Number(form.judgeConfig.timeLimit),
+        },
+      };
+      const res = await QuestionControllerService.addQuestionUsingPost(payload);
+      if (res.code === 0) {
+        message.success("创建成功!" + res.message);
+      } else {
+        message.error("创建失败！" + res.message);
+      }
     };
 
     return {
@@ -398,15 +439,12 @@ export default {
 
 /* 表单元素增强样式 */
 :deep(.arco-input-tag) {
-  min-height: 40px;
+  min-height: 30px;
 }
 
 :deep(.arco-input) {
+  min-height: 20px;
   transition: all 0.3s ease;
-}
-
-:deep(.arco-input:focus) {
-  box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.2);
 }
 
 :deep(.arco-textarea) {
@@ -417,7 +455,8 @@ export default {
   box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.2);
 }
 :deep(.arco-form-item-label-col) {
-  display: none;
+  flex-basis: fit-content;
+  font-weight: bold;
 }
 :deep(.arco-form-item-wrapper-col) {
   flex: 1;
