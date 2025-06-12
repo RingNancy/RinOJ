@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MdEditor :value="value" :handle-change="onChange" />
+    <MdEditor v-model="value" />
 
     <CodeEditor />
   </div>
@@ -13,7 +13,4 @@ import { ref } from "vue";
 import CodeEditor from "@/components/CodeEditor.vue";
 
 const value = ref();
-const onChange = (v: string) => {
-  value.value = v;
-};
 </script>

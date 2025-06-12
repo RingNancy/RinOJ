@@ -68,6 +68,8 @@ import { useStore } from "vuex";
 import checkAccess from "@/access/CheckAccess";
 import ACCESS_ENUM from "@/access/AccessEnum";
 import { Message } from "@arco-design/web-vue";
+import { UserControllerService } from "../../generated";
+import message from "@arco-design/web-vue/es/message";
 
 const router = useRouter();
 const store = useStore();
@@ -129,24 +131,19 @@ const user = () => {
 
 // 用户退出登录
 const userLogout = async () => {
-  try {
-    // 如果有退出登录的 API 接口，可以调用
-    // await UserControllerService.logoutUsingPost()
-
-    // 更新本地状态为未登录
+  // 如果有退出登录的 API 接口，可以调用
+  const res = await UserControllerService.userLogoutUsingPost();
+  if (res.code === 0) {
     store.commit("user/updateUser", {
       userName: "Sign In",
       userRole: ACCESS_ENUM.NOT_LOGIN,
     });
-
-    // 可以显示退出成功提示
-    Message.success("退出登录成功");
-    // 跳转到首页或登录页
-    router.push("/");
-  } catch (error) {
-    console.error("退出登录失败:", error);
-    // Message.error('退出登录失败')
+    message.success("退出成功！", res.message);
+  } else {
+    message.error("退出失败！");
   }
+  // 跳转到首页或登录页
+  await router.push("/");
 };
 // 跳转到登录页
 const Login = () => {
