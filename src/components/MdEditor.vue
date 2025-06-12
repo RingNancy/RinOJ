@@ -1,34 +1,45 @@
 <template>
   <!--  监听编辑器change事件-->
-  <Editor :value="value" :plugins="plugins" @change="handleChange" />
+  <Editor
+    :value="value"
+    :plugins="plugins"
+    @change="handleChange"
+    :locale="zhHans"
+  />
 </template>
 
 <script setup lang="ts">
 import gfm from "@bytemd/plugin-gfm";
 import highlight from "@bytemd/plugin-highlight";
 import { Editor, Viewer } from "@bytemd/vue-next";
-import { ref, withDefaults, defineProps } from "vue";
+import zhHans from "bytemd/locales/zh_Hans.json";
+import { ref, watch, defineProps, defineEmits } from "vue";
 
 /**
  * 定义组件属性类型
  */
-interface Probs {
-  value: string;
-  handleChange: (v: string) => void;
-}
+const props = defineProps<{
+  modelValue: string;
+}>();
 
-const probs = withDefaults(defineProps<Probs>(), {
-  value: () => "",
-  handleChange: (v: string) => {
-    console.log(v);
-  },
-});
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string): void;
+}>();
 
-const value = ref(""); //默认为空
+const value = ref(props.modelValue);
 
+// 同步外部值变化
+watch(
+  () => props.modelValue,
+  (val) => {
+    value.value = val;
+  }
+);
+
+// 编辑器值改变时通知外部
 const handleChange = (v: string) => {
   value.value = v;
-  probs.handleChange(v); //通知父组件完成更新
+  emit("update:modelValue", v);
 };
 
 const plugins = [
@@ -38,4 +49,8 @@ const plugins = [
 ];
 </script>
 
-<style scoped></style>
+<style>
+.bytemd-toolbar-icon.bytemd-tippy.bytemd-tippy-right:last-child {
+  display: none;
+}
+</style>
