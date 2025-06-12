@@ -17,6 +17,10 @@
 }
 
 #basicLayout .header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
   margin-bottom: 4px;
   box-shadow: #eee 1px 1px 5px;
 }
