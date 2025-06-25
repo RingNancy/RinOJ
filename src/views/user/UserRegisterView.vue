@@ -40,8 +40,8 @@
               type="outline"
               size="medium"
               class="register-btn"
-              >注册</a-button
-            >
+              >注册
+            </a-button>
           </a-form-item>
         </a-form>
       </a-space>
@@ -97,6 +97,7 @@ const handleSubmit = async () => {
   justify-content: center;
   min-height: 60vh;
 }
+
 .wrapper {
   width: 460px;
   padding: 40px;
@@ -104,6 +105,7 @@ const handleSubmit = async () => {
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+
 .title {
   text-align: center;
   margin-bottom: 32px;
@@ -131,6 +133,7 @@ const handleSubmit = async () => {
   font-weight: 400;
   color: #4e5969;
 }
+
 :deep(.arco-input-wrapper) {
   border-radius: 4px;
 }

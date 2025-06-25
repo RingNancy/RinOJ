@@ -113,6 +113,7 @@ const register = () => {
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+
 .title {
   text-align: center;
   margin-bottom: 32px;

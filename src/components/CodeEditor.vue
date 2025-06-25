@@ -1,24 +1,32 @@
 <template>
-  <div id="code-editor" ref="codeEditorRef" style="min-height: 400px" />
-  {{ value }}
-  <a-button @click="fillValue">填充值</a-button>
+  <div id="code-editor" ref="codeEditorRef" style="min-height: 70vh" />
 </template>
 
 <script setup lang="ts">
 import * as monaco from "monaco-editor";
-import { onMounted, ref, toRaw } from "vue";
+import { onMounted, ref, toRaw, withDefaults, defineProps } from "vue";
+import { editor } from "monaco-editor";
+import getModel = editor.getModel;
 
 const codeEditorRef = ref();
 const codeEditor = ref();
-const value = ref("hello world");
 
-const fillValue = () => {
-  if (!codeEditor.value) {
-    return;
-  }
-  // 改变值
-  toRaw(codeEditor.value).setValue("新的值");
-};
+/**
+ * 定义组件属性类型
+ */
+interface Props {
+  value: string;
+  language?: string;
+  handleChange: (v: string) => void;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: () => "",
+  language: () => "java",
+  handleChange: (v: string) => {
+    console.log(v);
+  },
+});
 
 onMounted(() => {
   if (!codeEditorRef.value) {
@@ -26,8 +34,8 @@ onMounted(() => {
   }
   // Hover on each property to see its docs!
   codeEditor.value = monaco.editor.create(codeEditorRef.value, {
-    value: value.value,
-    language: "java",
+    value: props.value,
+    language: props.language,
     automaticLayout: true,
     colorDecorators: true,
     minimap: {
@@ -35,14 +43,21 @@ onMounted(() => {
     },
     readOnly: false,
     theme: "vs-dark",
+    fontSize: 18,
+    tabSize: 2,
     // lineNumbers: "off",
     // roundedSelection: false,
-    // scrollBeyondLastLine: false,
+    scrollBeyondLastLine: false, //设置编辑器是否可以滚动到最后一行
   });
-
-  // 编辑 监听内容变化
+  monaco.editor.setModelLanguage(
+    toRaw(codeEditor.value).getModel(),
+    props.language
+  );
+  /**
+   * 监听代码编辑器
+   */
   codeEditor.value.onDidChangeModelContent(() => {
-    console.log("目前内容为：", toRaw(codeEditor.value).getValue());
+    props.handleChange(toRaw(codeEditor.value).getValue());
   });
 });
 </script>

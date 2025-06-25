@@ -138,7 +138,7 @@ const userLogout = async () => {
       userName: "Sign In",
       userRole: ACCESS_ENUM.NOT_LOGIN,
     });
-    message.success("退出成功！", res.message);
+    message.success("退出成功！" + res.message);
   } else {
     message.error("退出失败！");
   }
@@ -171,5 +171,10 @@ const doMenuClicked = (key: string) => {
 
 .logo {
   height: 48px;
+}
+:deep(.arco-menu) {
+  font-family: "Arial", "Microsoft YaHei", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
 }
 </style>

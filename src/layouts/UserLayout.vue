@@ -30,6 +30,7 @@ import router from '../router/index';
   text-align: center;
   background: url("../assets/background.png") 0% 0% / 100% 100% no-repeat;
 }
+
 #UserLayout .logo {
   height: 84px;
   width: 84px;

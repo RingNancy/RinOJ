@@ -17,5 +17,6 @@
 <script setup lang="ts">
 import basicLayout from "@/layouts/basicLayout.vue";
 import { useRoute } from "vue-router";
+
 const route = useRoute();
 </script>

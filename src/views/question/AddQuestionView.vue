@@ -212,8 +212,8 @@
   {{ form }}
 </template>
 
-<script lang="ts">
-import { reactive, ref } from "vue";
+<script setup lang="ts">
+import { onMounted, reactive, ref } from "vue";
 import MdEditor from "@/components/MdEditor.vue";
 import {
   IconPlus,
@@ -223,74 +223,195 @@ import {
 } from "@arco-design/web-vue/es/icon";
 import { QuestionControllerService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
+import { useRoute, useRouter } from "vue-router";
 
-export default {
-  components: {
-    MdEditor,
-    IconPlus,
-    IconDelete,
-    IconCheck,
-    IconRefresh,
+// 定义表单数据类型
+interface FormData {
+  id?: number | null;
+  answer: string;
+  title: string;
+  content: string;
+  judgeCase: Array<{
+    input: string;
+    output: string;
+  }>;
+  judgeConfig: {
+    memoryLimit: string;
+    stackLimit: string;
+    timeLimit: string;
+  };
+  tags: string[];
+}
+
+const form = reactive<FormData>({
+  id: null,
+  answer: "",
+  title: "",
+  content: "",
+  judgeCase: [
+    {
+      input: "",
+      output: "",
+    },
+  ],
+  judgeConfig: {
+    memoryLimit: "",
+    stackLimit: "",
+    timeLimit: "",
   },
-  setup() {
-    const status = ref("success");
-    const showDebug = ref(false); // 控制调试信息显示
+  tags: [],
+});
 
-    const form = reactive({
-      answer: "",
-      title: "",
-      content: "",
-      judgeCase: [
-        {
-          input: "",
-          output: "",
-        },
-      ],
-      judgeConfig: {
-        memoryLimit: "",
-        stackLimit: "",
-        timeLimit: "",
-      },
-      tags: [],
-    });
+const route = useRoute();
+const router = useRouter();
+//区分路由，修改题目和添加题目采用同一个页面，采用路由路径是否包含‘update’来进行区分
+const updatePage = route.path.includes("update");
 
-    const handleAdd = () => {
-      form.judgeCase.push({
-        input: "",
-        output: "",
-      });
-    };
-    const handleDelete = (index: number) => {
-      if (form.judgeCase.length > 1) {
-        form.judgeCase.splice(index, 1);
-      }
-    };
-    const handleSubmit = async () => {
-      const payload = {
-        ...form,
-        judgeConfig: {
-          memoryLimit: Number(form.judgeConfig.memoryLimit),
-          stackLimit: Number(form.judgeConfig.stackLimit),
-          timeLimit: Number(form.judgeConfig.timeLimit),
-        },
-      };
-      const res = await QuestionControllerService.addQuestionUsingPost(payload);
-      if (res.code === 0) {
-        message.success("创建成功!" + res.message);
+const loadData = async () => {
+  const id = route.query.id;
+  if (!id) return;
+  try {
+    const res = await QuestionControllerService.getQuestionByIdUsingGet(
+      id as any
+    );
+    if (res.code === 0 && res.data) {
+      const data = res.data;
+      form.id = data.id || null;
+      //对于基础字段的赋值，id，title，content,answer
+      form.title = data.title || "";
+      form.answer = data.answer || "";
+      form.content = data.content || "";
+
+      //解析tags.Json转字符串
+      if (data.tags) {
+        try {
+          form.tags =
+            typeof data.tags === "string"
+              ? JSON.parse(data.tags)
+              : Array.isArray(data.tags)
+              ? data.tags
+              : [];
+        } catch (e) {
+          console.warn("解析失败", e);
+          form.tags = typeof data.tags === "string" ? [data.tags] : [];
+        }
       } else {
-        message.error("创建失败！" + res.message);
+        form.tags = [];
       }
+
+      // 解析 judgeConfig
+      if (data.judgeConfig) {
+        try {
+          const judgeConfig =
+            typeof data.judgeConfig === "string"
+              ? JSON.parse(data.judgeConfig)
+              : data.judgeConfig;
+
+          form.judgeConfig = {
+            memoryLimit: judgeConfig.memoryLimit?.toString() || "",
+            stackLimit: judgeConfig.stackLimit?.toString() || "",
+            timeLimit: judgeConfig.timeLimit?.toString() || "",
+          };
+        } catch (e) {
+          console.warn("JudgeConfig解析失败:", e);
+          form.judgeConfig = {
+            memoryLimit: "",
+            stackLimit: "",
+            timeLimit: "",
+          };
+        }
+      }
+
+      // 解析 judgeCase
+      if (data.judgeCase) {
+        try {
+          const judgeCase =
+            typeof data.judgeCase === "string"
+              ? JSON.parse(data.judgeCase)
+              : data.judgeCase;
+
+          if (Array.isArray(judgeCase) && judgeCase.length > 0) {
+            form.judgeCase = judgeCase.map((item) => ({
+              input: item.input || "",
+              output: item.output || "",
+            }));
+          }
+        } catch (e) {
+          console.warn("JudgeCase解析失败:", e);
+          form.judgeCase = [{ input: "", output: "" }];
+        }
+      }
+
+      message.success("数据加载成功");
+    } else {
+      message.error("请求失败" + res.message);
+    }
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    message.error("加载数据失败，请稍后重试");
+  }
+};
+
+onMounted(() => {
+  if (updatePage) {
+    loadData();
+  }
+});
+
+const status = ref("success");
+const showDebug = ref(false); // 控制调试信息显示
+
+const handleAdd = () => {
+  form.judgeCase.push({
+    input: "",
+    output: "",
+  });
+};
+const handleDelete = (index: number) => {
+  //判题用例缺少不可删除
+  if (form.judgeCase.length > 1) {
+    form.judgeCase.splice(index, 1);
+  }
+};
+const handleSubmit = async () => {
+  try {
+    const payload: any = {
+      title: form.title,
+      content: form.content,
+      answer: form.answer,
+      tags: form.tags,
+      judgeCase: form.judgeCase,
+      judgeConfig: {
+        memoryLimit: Number(form.judgeConfig.memoryLimit) || 0,
+        stackLimit: Number(form.judgeConfig.stackLimit) || 0,
+        timeLimit: Number(form.judgeConfig.timeLimit) || 0,
+      },
     };
 
-    return {
-      form,
-      status,
-      showDebug,
-      handleAdd,
-      handleDelete,
-      handleSubmit,
-    };
-  },
+    let res;
+    if (updatePage && form.id) {
+      // 更新操作
+      payload.id = form.id;
+      res = await QuestionControllerService.updateQuestionUsingPost(payload);
+    } else {
+      res = await QuestionControllerService.addQuestionUsingPost(payload);
+    }
+
+    if (res.code === 0) {
+      message.success(`${updatePage ? "更新" : "创建"}成功!`);
+      if (updatePage) {
+        // 更新成功后可以选择跳转回列表页面
+        setTimeout(() => {
+          router.push("/manage/manage_questions");
+        }, 1000);
+      }
+    } else {
+      message.error(`${updatePage ? "更新" : "创建"}失败！` + res.message);
+    }
+  } catch (error) {
+    console.error("提交失败:", error);
+    message.error(`${updatePage ? "更新" : "创建"}失败，请稍后重试`);
+  }
 };
 </script>
 
@@ -454,10 +575,12 @@ export default {
 :deep(.arco-textarea:focus) {
   box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.2);
 }
+
 :deep(.arco-form-item-label-col) {
   flex-basis: fit-content;
   font-weight: bold;
 }
+
 :deep(.arco-form-item-wrapper-col) {
   flex: 1;
 }
